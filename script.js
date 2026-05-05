@@ -1,11 +1,16 @@
+const intro = document.getElementById("intro");
+const terminalSection = document.getElementById("terminal");
 const terminal = document.getElementById("terminalOutput");
 const revelationSection = document.getElementById("revelation");
+const startBtn = document.getElementById("startExperience");
 
 let realLocation = null;
 
-// =============================
-// BUSCAR LOCALIZAÇÃO REAL VIA IP
-// =============================
+document.body.classList.add("lock-scroll");
+
+// ==========================
+// Buscar localização via IP
+// ==========================
 async function fetchLocation() {
     try {
         const response = await fetch("https://ipapi.co/json/");
@@ -18,16 +23,14 @@ async function fetchLocation() {
             country: data.country_name,
             org: data.org
         };
-
     } catch (error) {
-        // fallback se API falhar
         realLocation = null;
     }
 }
 
-// =============================
-// GERADOR DE IP FAKE (backup)
-// =============================
+// ==========================
+// Gerador IP Fake (backup)
+// ==========================
 function generateFakeIP() {
     return `${rand()}.${rand()}.${rand()}.${rand()}`;
 }
@@ -36,15 +39,15 @@ function rand() {
     return Math.floor(Math.random() * 255);
 }
 
-// =============================
-// EFEITO DE DIGITAÇÃO
-// =============================
+// ==========================
+// Efeito digitação
+// ==========================
 function typeLine(text, callback) {
-    let line = document.createElement("p");
+    const line = document.createElement("p");
     terminal.appendChild(line);
 
     let i = 0;
-    let interval = setInterval(() => {
+    const interval = setInterval(() => {
         line.textContent += text.charAt(i);
         i++;
         if (i >= text.length) {
@@ -54,9 +57,9 @@ function typeLine(text, callback) {
     }, 35);
 }
 
-// =============================
-// SEQUÊNCIA PRINCIPAL
-// =============================
+// ==========================
+// Simulação principal
+// ==========================
 function startHackSimulation() {
 
     const detectedIP = realLocation?.ip || generateFakeIP();
@@ -68,16 +71,13 @@ function startHackSimulation() {
     const messages = [
         "Estabelecendo conexão...",
         "Iniciando varredura...",
-        "Analisando IP público...",
         `IP detectado: ${detectedIP}`,
         "Rastreando localização aproximada...",
         `Localização: ${detectedCity}`,
         `Provedor identificado: ${detectedISP}`,
-        "Detectando sistema operacional...",
         `Navegador detectado: ${navigator.userAgent}`,
         "Buscando vulnerabilidades...",
-        "Extraindo dados do navegador...",
-        "Sincronizando contatos...",
+        "Extraindo dados...",
         "Upload concluído."
     ];
 
@@ -85,24 +85,26 @@ function startHackSimulation() {
         if (index < messages.length) {
             typeLine(messages[index], () => next(index + 1));
         } else {
-            setTimeout(showRevelation, 1800);
+            setTimeout(showRevelation, 2000);
         }
     }
 
     next();
 }
 
-// =============================
-// REVELAÇÃO
-// =============================
+// ==========================
+// Revelação
+// ==========================
 function showRevelation() {
+    document.getElementById("revelation").style.display = "flex";
+    document.getElementById("lesson").style.display = "block";
 
-    // Vibrar celular
+    document.body.classList.remove("lock-scroll");
+
     if (navigator.vibrate) {
         navigator.vibrate([300, 100, 300]);
     }
 
-    // Flash vermelho
     document.body.style.backgroundColor = "#8b0000";
 
     setTimeout(() => {
@@ -111,11 +113,22 @@ function showRevelation() {
     }, 400);
 }
 
-// =============================
-// INICIAR
-// =============================
-window.onload = async () => {
-    terminal.innerHTML = "";
-    await fetchLocation();
-    startHackSimulation();
-};
+// ==========================
+// Botão inicia tudo
+// ==========================
+startBtn.addEventListener("click", async () => {
+
+    intro.style.transition = "opacity 0.6s ease";
+    intro.style.opacity = "0";
+
+    setTimeout(async () => {
+        intro.style.display = "none";
+        terminalSection.style.display = "flex";
+
+        terminal.innerHTML = "";
+
+        await fetchLocation();
+        startHackSimulation();
+
+    }, 600);
+});
